@@ -3,69 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zero-Trust Cryptographic Vault</title>
+    <title>Distributed Secure Storage</title>
     <script src="https://unpkg.com/secrets.js-grempe@2.0.0/secrets.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-main: #050505;
-            --bg-panel: #0a0a0a;
-            --border-subtle: #222222;
-            --text-primary: #f0f0f0;
-            --text-muted: #666666;
-            --accent: #ffffff;
-            --console-bg: #000000;
+            --bg-main: #f4f7f6;
+            --bg-panel: #ffffff;
+            --border: #e2e8f0;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --log-bg: #f8fafc;
         }
 
         body {
             background-color: var(--bg-main);
-            color: var(--text-primary);
+            color: var(--text-main);
             font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
             -webkit-font-smoothing: antialiased;
         }
 
-        .vault-interface {
+        .dashboard {
             width: 100%;
-            max-width: 900px;
+            max-width: 850px;
             background: var(--bg-panel);
-            border: 1px solid var(--border-subtle);
-            padding: 50px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
 
         h1 {
-            font-size: 1rem;
-            text-transform: uppercase;
+            font-size: 1.5rem;
             font-weight: 600;
-            letter-spacing: 4px;
-            color: var(--text-primary);
+            color: var(--text-main);
             margin-top: 0;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            margin-bottom: 8px;
         }
 
-        h1::before {
-            content: "";
-            display: block;
-            width: 12px;
-            height: 12px;
-            background-color: var(--text-primary);
+        p.subtitle {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 30px;
         }
 
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            gap: 24px;
             margin-bottom: 30px;
         }
 
@@ -79,156 +74,156 @@
         }
 
         label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            font-weight: 500;
         }
 
         input[type="text"], input[type="number"] {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid var(--border-subtle);
-            color: var(--text-primary);
-            padding: 10px 0;
-            font-family: 'JetBrains Mono', monospace;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            padding: 12px 16px;
             font-size: 0.95rem;
-            transition: border-color 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         input[type="file"] {
-            background: #111;
-            border: 1px dashed var(--border-subtle);
-            color: var(--text-muted);
-            padding: 15px;
-            font-size: 0.8rem;
+            background: var(--log-bg);
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            color: var(--text-light);
+            padding: 16px;
+            font-size: 0.9rem;
             cursor: pointer;
         }
 
         input:focus {
             outline: none;
-            border-bottom: 1px solid var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .actions {
             display: flex;
-            gap: 20px;
+            gap: 16px;
             margin-bottom: 40px;
         }
 
         button {
-            background: transparent;
-            color: var(--text-primary);
-            border: 1px solid var(--border-subtle);
-            padding: 16px;
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
             cursor: pointer;
-            text-transform: uppercase;
             font-family: 'Inter', sans-serif;
             font-weight: 600;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
+            font-size: 0.95rem;
             flex: 1;
-            transition: all 0.3s ease;
+            transition: background 0.2s ease;
         }
 
-        button:hover {
-            background: var(--text-primary);
-            color: var(--bg-main);
-            border-color: var(--text-primary);
+        button.secondary {
+            background: #ffffff;
+            color: var(--text-main);
+            border: 1px solid var(--border);
         }
 
-        .console-wrapper {
-            border: 1px solid var(--border-subtle);
-            background: var(--console-bg);
-            position: relative;
+        button:hover { background: var(--accent-hover); }
+        button.secondary:hover { background: var(--log-bg); }
+
+        .log-panel {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--log-bg);
+            overflow: hidden;
         }
 
-        .console-header {
-            border-bottom: 1px solid var(--border-subtle);
-            padding: 8px 15px;
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-        }
-
-        #console-output {
-            padding: 20px;
-            height: 220px;
-            overflow-y: auto;
-            font-family: 'JetBrains Mono', monospace;
+        .log-header {
+            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
             font-size: 0.8rem;
-            line-height: 1.8;
-            color: #cccccc;
-            word-wrap: break-word;
+            font-weight: 600;
+            color: var(--text-light);
+            background: #ffffff;
         }
 
-        .sys-msg { color: #555555; }
-        .err-msg { color: #ff4444; }
-        .warn-msg { color: #ffffff; font-weight: bold; }
+        #activity-feed {
+            padding: 16px;
+            height: 180px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        .status-normal { color: var(--text-light); }
+        .status-success { color: #16a34a; font-weight: 500; }
+        .status-error { color: #dc2626; font-weight: 500; }
         
-        #console-output::-webkit-scrollbar { width: 6px; }
-        #console-output::-webkit-scrollbar-track { background: var(--console-bg); }
-        #console-output::-webkit-scrollbar-thumb { background: #333; }
+        #activity-feed::-webkit-scrollbar { width: 6px; }
+        #activity-feed::-webkit-scrollbar-track { background: transparent; }
+        #activity-feed::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <div class="vault-interface">
-        <h1>Zero-Trust Hybrid Data Engine</h1>
+    <div class="dashboard">
+        <h1>Distributed Storage Gateway</h1>
+        <p class="subtitle">Securely split and distribute files across the backend network.</p>
         
         <div class="grid">
             <div class="input-group">
-                <label>Key Identifier</label>
-                <input type="text" id="keyId" placeholder="e.g., master_key_01" autocomplete="off">
-            </div>
-            <div class="input-group">
-                <label>Total Nodes (N)</label>
-                <input type="number" id="totalNodes" value="5" min="2" max="10">
+                <label>File or Project Name</label>
+                <input type="text" id="keyId" placeholder="e.g., final_report" autocomplete="off">
             </div>
             
             <div class="input-group full-width">
-                <label>Secure Text Payload <span style="text-transform:none; color:#444;">(Leave blank if uploading file)</span></label>
-                <input type="text" id="secret" placeholder="Enter confidential text data..." autocomplete="off">
+                <label>Secret Message (Leave blank if uploading a file)</label>
+                <input type="text" id="secret" placeholder="Type a message to secure..." autocomplete="off">
             </div>
 
             <div class="input-group full-width">
-                <label>Attach Binary File <span id="file-status" style="text-transform:none; color:#ffcc00; font-weight:bold;">[DISCLAIMER: Strictly under 400KB due to browser math constraints]</span></label>
+                <label>Upload File <span id="file-status" style="color:var(--text-light); font-weight:normal; font-size: 0.8rem;">(Max size: 400KB)</span></label>
                 <input type="file" id="fileInput" onchange="checkFileSize()">
             </div>
 
-            <div class="input-group" style="grid-column: 1 / -1;">
-                <label>Threshold Required (K)</label>
+            <div class="input-group">
+                <label>Total Servers to Use</label>
+                <input type="number" id="totalNodes" value="5" min="2" max="10">
+            </div>
+
+            <div class="input-group">
+                <label>Minimum Servers to Unlock</label>
                 <input type="number" id="threshold" value="3" min="2" max="10">
             </div>
         </div>
 
         <div class="actions">
-            <button onclick="encryptData()">Encrypt & Commit</button>
-            <button onclick="decryptData()">Fetch & Reconstruct</button>
+            <button onclick="encryptData()">Split & Send to Servers</button>
+            <button class="secondary" onclick="decryptData()">Retrieve & Unlock</button>
         </div>
 
-        <div class="console-wrapper">
-            <div class="console-header">System Output Log</div>
-            <div id="console-output">
-                <span class="sys-msg">INITIATING HYBRID PROTOCOLS...</span><br>
-                <span class="sys-msg">READY FOR TEXT OR BINARY PAYLOADS.</span><br>
+        <div class="log-panel">
+            <div class="log-header">Activity Feed</div>
+            <div id="activity-feed">
+                <span class="status-normal">System ready. Waiting for input...</span><br>
             </div>
         </div>
     </div>
 
     <script>
-        function printToConsole(message, type="normal") {
-            const terminal = document.getElementById('console-output');
-            let color = "#cccccc";
-            if (type === "sys") color = "#555555";
-            if (type === "err") color = "#ff4444";
-            if (type === "warn") color = "#ffffff";
+        function logActivity(message, type="normal") {
+            const feed = document.getElementById('activity-feed');
+            let cssClass = "status-normal";
+            if (type === "success") cssClass = "status-success";
+            if (type === "error") cssClass = "status-error";
             
-            terminal.innerHTML += `<span style="color:${color}">${message}</span><br>`;
-            terminal.scrollTop = terminal.scrollHeight;
+            feed.innerHTML += `<span class="${cssClass}">${message}</span><br>`;
+            feed.scrollTop = feed.scrollHeight;
         }
 
         function checkFileSize() {
@@ -240,18 +235,18 @@
                 const fileSizeKB = (file.size / 1024).toFixed(1);
                 
                 if (file.size > 400000) {
-                    statusText.innerHTML = `[REJECTED: ${fileSizeKB}KB - EXCEEDS DISK LIMIT]`;
-                    statusText.style.color = "#ff4444";
+                    statusText.innerHTML = `(File too large: ${fileSizeKB}KB - Please keep under 400KB)`;
+                    statusText.style.color = "#dc2626";
                     fileInput.value = ""; 
-                    printToConsole(`[SYS-WARN] Upload blocked. A ${fileSizeKB}KB file will crash the mathematical limits of the client-side vault.`, "err");
+                    logActivity(`Upload blocked. The file is too large to process in the browser.`, "error");
                 } else {
-                    statusText.innerHTML = `[ACCEPTED: ${fileSizeKB}KB IN BUFFER]`;
-                    statusText.style.color = "#a8ffb2";
-                    printToConsole(`[SYS] File validated (${fileSizeKB}KB). Ready for polynomial shredding.`, "sys");
+                    statusText.innerHTML = `(Ready: ${fileSizeKB}KB)`;
+                    statusText.style.color = "#16a34a";
+                    logActivity(`File attached successfully.`, "normal");
                 }
             } else {
-                statusText.innerHTML = `[DISCLAIMER: Strictly under 400KB due to browser math constraints]`;
-                statusText.style.color = "#ffcc00";
+                statusText.innerHTML = `(Max size: 400KB)`;
+                statusText.style.color = "var(--text-light)";
             }
         }
 
@@ -271,36 +266,31 @@
             const totalNodes = parseInt(document.getElementById('totalNodes').value);
             const threshold = parseInt(document.getElementById('threshold').value);
 
-            if (!keyId) return printToConsole("[ERROR] Key Identifier is required.", "err");
-            if (!secretText && !fileInput) return printToConsole("[ERROR] Provide a text payload OR attach a valid file.", "err");
-            if (threshold > totalNodes) return printToConsole("[ERROR] Threshold cannot exceed Total Nodes.", "err");
+            if (!keyId) return logActivity("Please enter a File or Project Name.", "error");
+            if (!secretText && !fileInput) return logActivity("Please enter a message or upload a file.", "error");
+            if (threshold > totalNodes) return logActivity("Minimum servers cannot be greater than total servers.", "error");
 
-            printToConsole("<br>----------------------------------------", "sys");
-            printToConsole(`[SYS] ANALYZING PAYLOAD FOR KEY: ${keyId}`, "warn");
+            logActivity("<br>--- Starting New Process ---", "normal");
+            logActivity(`Preparing to secure data for: ${keyId}`, "normal");
 
             let finalPayload = "";
 
             try {
                 if (fileInput) {
-                    if (fileInput.size > 400000) return printToConsole(`[FATAL] File exceeds 400KB constraint.`, "err");
-                    printToConsole(`[SYS] ENCODING BINARY TO BASE64...`, "sys");
+                    if (fileInput.size > 400000) return logActivity(`File is too large.`, "error");
+                    logActivity(`Converting file format...`, "normal");
                     finalPayload = await readFileAsBase64(fileInput);
                 } else {
-                    printToConsole(`[SYS] DETECTED STRING PAYLOAD.`, "sys");
                     finalPayload = secretText;
                 }
                 
-                printToConsole(`[SYS] SHREDDING PAYLOAD POLYNOMIALS...`, "warn");
+                logActivity(`Splitting data into ${totalNodes} secure pieces...`, "normal");
 
                 const secretHex = secrets.str2hex(finalPayload);
                 const shares = secrets.share(secretHex, totalNodes, threshold);
-                
-                shares.forEach((share, index) => {
-                    printToConsole(`NODE_${index + 1} // ${share.substring(0, 48)}...`);
-                });
 
                 // --- GROUP API INTEGRATION: SEND PAYLOAD ---
-                printToConsole(`[NETWORK] ROUTING SHARDS TO API GATEWAY...`, "warn");
+                logActivity(`Connecting to backend servers...`, "normal");
 
                 try {
                     const response = await fetch('http://localhost:5000/api/encrypt', {
@@ -314,25 +304,25 @@
                         })
                     });
 
-                    if (!response.ok) throw new Error(`Gateway rejected request: ${response.status}`);
-                    printToConsole(`[SUCCESS] PAYLOAD ACCEPTED BY BACKEND CLUSTER.`, "sys");
+                    if (!response.ok) throw new Error(`Server returned status ${response.status}`);
+                    logActivity(`Success: Data safely distributed across the backend network!`, "success");
 
                 } catch (networkError) {
-                    printToConsole(`[NETWORK ERROR] Could not reach API Gateway: ${networkError.message}`, "err");
-                    // Fallback to local storage if the group's server crashes during demo
+                    logActivity(`Backend offline. Activating offline safety mode...`, "error");
+                    // Fallback to local storage if the group's server crashes
                     localStorage.setItem(keyId, JSON.stringify(shares));
-                    printToConsole(`[FALLBACK] SAVED TO LOCAL DISK INSTEAD.`, "warn");
+                    logActivity(`Data saved locally to ensure the demo continues.`, "success");
                 }
                 // -------------------------------------------
                 
                 // Clear UI on success
                 document.getElementById('secret').value = ''; 
                 document.getElementById('fileInput').value = ''; 
-                document.getElementById('file-status').innerHTML = `[DISCLAIMER: Strictly under 400KB due to browser math constraints]`;
-                document.getElementById('file-status').style.color = "#ffcc00";
+                document.getElementById('file-status').innerHTML = `(Max size: 400KB)`;
+                document.getElementById('file-status').style.color = "var(--text-light)";
 
             } catch (error) {
-                printToConsole(`[FATAL] CRYPTOGRAPHIC ERROR: ${error.message}`, "err");
+                logActivity(`Processing error: ${error.message}`, "error");
             }
         }
 
@@ -340,33 +330,33 @@
             const keyId = document.getElementById('keyId').value;
             const threshold = parseInt(document.getElementById('threshold').value);
 
-            if (!keyId) return printToConsole("[ERROR] Provide Key Identifier for retrieval.", "err");
+            if (!keyId) return logActivity("Please enter the File Name to retrieve.", "error");
             
-            printToConsole("<br>----------------------------------------", "sys");
-            printToConsole(`[SYS] QUERYING STORAGE FOR KEY: ${keyId}`, "warn");
-
+            logActivity("<br>--- Starting Retrieval Process ---", "normal");
+            
             // --- GROUP API INTEGRATION: FETCH PAYLOAD ---
-            printToConsole(`[NETWORK] REQUESTING SHARDS FROM GATEWAY...`, "warn");
+            logActivity(`Requesting data pieces from backend servers...`, "normal");
             let localMemory;
 
             try {
                 const response = await fetch(`http://localhost:5000/api/decrypt/${keyId}`);
-                if (!response.ok) throw new Error("Gateway failed to retrieve shards.");
+                if (!response.ok) throw new Error("Could not find data on servers.");
                 
                 const serverData = await response.json();
                 localMemory = serverData.shards; 
-                printToConsole(`[SUCCESS] DOWNLOADING SHARDS FROM CLUSTER...`, "sys");
+                logActivity(`Data pieces retrieved successfully.`, "success");
 
             } catch (networkError) {
-                printToConsole(`[NETWORK ERROR] Gateway offline. Attempting local fallback...`, "err");
+                logActivity(`Backend offline. Checking local storage...`, "error");
                 const storedData = localStorage.getItem(keyId);
-                if (!storedData) return printToConsole(`[FATAL] NO DATA ON SERVER OR LOCAL DISK.`, "err");
+                if (!storedData) return logActivity(`Could not find this file anywhere.`, "error");
                 localMemory = JSON.parse(storedData);
+                logActivity(`Found data pieces locally.`, "success");
             }
             // -------------------------------------------
 
             setTimeout(() => {
-                printToConsole(`[SYS] RETRIEVED ${threshold} SHARDS. EXECUTING RECONSTRUCTION...`, "warn");
+                logActivity(`Combining pieces to unlock the data...`, "normal");
                 
                 try {
                     const retrievedShares = localMemory.slice(0, threshold);
@@ -374,16 +364,16 @@
                     const originalPayload = secrets.hex2str(combinedHex);
                     
                     if (originalPayload.startsWith('data:')) {
-                        printToConsole(`[SUCCESS] FILE DECRYPTED. GENERATING SECURE LINK...`, "warn");
-                        const downloadLink = `<a href="${originalPayload}" download="decrypted_${keyId}" style="color:#ffffff; text-decoration:underline;">[ >> CLICK TO DOWNLOAD RECONSTRUCTED FILE << ]</a>`;
-                        printToConsole(downloadLink, "normal");
+                        logActivity(`File unlocked successfully!`, "success");
+                        const downloadLink = `<a href="${originalPayload}" download="decrypted_${keyId}" style="color:#2563eb; text-decoration:underline; font-weight:600;">Download Unlocked File</a>`;
+                        logActivity(downloadLink, "normal");
                     } else {
-                        printToConsole(`[SUCCESS] TEXT DECRYPTED:`, "warn");
-                        printToConsole(`>> ${originalPayload}`, "warn");
+                        logActivity(`Message unlocked successfully:`, "success");
+                        logActivity(`Message: "${originalPayload}"`, "normal");
                     }
 
                 } catch (error) {
-                    printToConsole(`[FATAL] RECONSTRUCTION FAILED: ${error.message}`, "err");
+                    logActivity(`Failed to combine pieces: ${error.message}`, "error");
                 }
             }, 600);
         }
