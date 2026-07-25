@@ -162,7 +162,7 @@
 
         .status-normal { color: var(--text-light); }
         .status-success { color: #16a34a; font-weight: 500; }
-        .status-error { color: #dc2626; font-weight: 500; }
+        .status-error { color: #dc2626; font-weight: 600; }
         
         #activity-feed::-webkit-scrollbar { width: 6px; }
         #activity-feed::-webkit-scrollbar-track { background: transparent; }
@@ -306,20 +306,19 @@
 
                     if (!response.ok) throw new Error(`Server returned status ${response.status}`);
                     logActivity(`Success: Data safely distributed across the backend network!`, "success");
+                    
+                    // Clear UI on success only
+                    document.getElementById('secret').value = ''; 
+                    document.getElementById('fileInput').value = ''; 
+                    document.getElementById('file-status').innerHTML = `(Max size: 400KB)`;
+                    document.getElementById('file-status').style.color = "var(--text-light)";
 
                 } catch (networkError) {
-                    logActivity(`Backend offline. Activating offline safety mode...`, "error");
-                    // Fallback to local storage if the group's server crashes
-                    localStorage.setItem(keyId, JSON.stringify(shares));
-                    logActivity(`Data saved locally to ensure the demo continues.`, "success");
+                    // WEAPONIZED: Hard crash instead of offline fallback
+                    logActivity(`[FATAL ERROR] Connection refused at http://localhost:5000/api/encrypt`, "error");
+                    logActivity(`Backend servers are offline. Payload dropped.`, "error");
                 }
                 // -------------------------------------------
-                
-                // Clear UI on success
-                document.getElementById('secret').value = ''; 
-                document.getElementById('fileInput').value = ''; 
-                document.getElementById('file-status').innerHTML = `(Max size: 400KB)`;
-                document.getElementById('file-status').style.color = "var(--text-light)";
 
             } catch (error) {
                 logActivity(`Processing error: ${error.message}`, "error");
@@ -347,11 +346,8 @@
                 logActivity(`Data pieces retrieved successfully.`, "success");
 
             } catch (networkError) {
-                logActivity(`Backend offline. Checking local storage...`, "error");
-                const storedData = localStorage.getItem(keyId);
-                if (!storedData) return logActivity(`Could not find this file anywhere.`, "error");
-                localMemory = JSON.parse(storedData);
-                logActivity(`Found data pieces locally.`, "success");
+                // WEAPONIZED: Hard crash instead of offline fallback
+                return logActivity(`[FATAL ERROR] Gateway offline. Cannot retrieve shards from network.`, "error");
             }
             // -------------------------------------------
 
